@@ -1,7 +1,46 @@
 {
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "editor.defaultFormatter": "esbenp.prettier-vscode",
+  "editor.formatOnSave": true,
   "eslint.workingDirectories": [
     {
-      "mode": "auto"
+      "pattern": "apps/*/"
+    },
+    {
+      "pattern": "packages/*/"
+    },
+    {
+      "pattern": "tooling/*/"
     }
-  ]
+  ],
+  "eslint.useFlatConfig": true,
+  "json.schemas": [
+    {
+      "fileMatch": [
+        "package.json",
+        "tsup.config.json"
+      ],
+      "url": "https://cdn.jsdelivr.net/npm/tsup/schema.json"
+    }
+  ],
+  "tailwindCSS.experimental.classRegex": [
+    [
+      "cva\\(([^)]*)\\)",
+      "[\"'`]([^\"'`]*).*?[\"'`]"
+    ],
+    [
+      "cx\\(([^)]*)\\)",
+      "(?:'|\"|`)([^']*)(?:'|\"|`)"
+    ]
+  ],
+  "tailwindCSS.experimental.configFile": "../apps/qualia/tailwind.config.ts",
+  "typescript.enablePromptUseWorkspaceTsdk": true,
+  "typescript.preferences.autoImportFileExcludePatterns": [
+    "@radix-ui/react-slot",
+    "@radix-ui/react-dialog"
+  ],
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
