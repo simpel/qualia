@@ -1,87 +1,57 @@
 import { logout } from '@/actions/logout';
-import { Tables } from '@/types/supabase';
+
+import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+} from '@/shadcn/components/ui/avatar';
+import { getProfile } from '@/utils/server/profile';
 import dictionary from '@qualia/dictionary';
-import { Avatar, Flex, Heading, HoverCard } from '@radix-ui/themes';
-import Link, { LinkProps } from 'next/link';
 import { Button } from '../Forms/Button/Button';
 
-export interface IHeader {
-  profile: Tables<'profiles'>;
-}
-
-const menu: LinkProps[] = [
-  { href: '/you', children: 'Assignments' },
-  { href: '/login', children: 'Submissions' },
-  { href: '/hello', children: 'Profile' },
-];
-
-export const Header = ({ profile }: IHeader) => {
+export const Header = async () => {
   const next = '/';
 
-  const avatarFallback = `${profile.first_name.charAt(0)}${profile.last_name.charAt(0)}`;
+  const { profile } = await getProfile();
+
+  const avatarFallback = `${profile?.data?.first_name.charAt(0)}${profile?.data?.last_name.charAt(0)}`;
 
   const logoutAction = logout.bind(null, next);
 
   return (
-    <Flex
-      asChild
-      gap={'8'}
-      align={'center'}
-      justify={'between'}
-      width="100%"
-      px={'4'}
-      position={'absolute'}
-      top={'0'}
-      left={'0'}
-      right={'0'}
-      height="60px"
-      className="bg-white/50 backdrop-blur-md"
-    >
-      <header>
-        <Flex align={'baseline'} gap={'8'}>
-          <Heading asChild weight={'light'} size={'7'}>
-            <p>{dictionary.site_name}</p>
-          </Heading>
-          <nav>
-            <Flex gap={'6'}>
-              {menu.map((item, index) => (
-                <Link {...item} className="font-light" key={index} />
-              ))}
-            </Flex>
-          </nav>
-        </Flex>
-
-        <Flex gap={'6'} align={'center'}>
-          <Flex align="center" gap="2">
-            <HoverCard.Root>
-              <HoverCard.Trigger>
-                <Avatar
-                  radius="full"
+    <header className="sticky left-0 right-0 top-0 bg-white/10 backdrop-blur-xl">
+      <div className="container mx-auto">
+        <div className="flex items-center justify-between">
+          <h1 className="my-4 font-serif text-4xl font-thin">
+            {dictionary.site_name}
+          </h1>
+          {profile?.data && (
+            <div className="flex items-center justify-between gap-6">
+              <Avatar>
+                <AvatarImage
                   src={
-                    profile.gravatar
-                      ? `https://www.gravatar.com/avatar/${profile.gravatar}`
+                    profile.data.gravatar
+                      ? `https://www.gravatar.com/avatar/${profile.data.gravatar}`
                       : undefined
                   }
-                  fallback={avatarFallback}
                 />
-              </HoverCard.Trigger>
-              <HoverCard.Content maxWidth="300px">
-                <Flex gap="4">
-                  <span>
-                    {dictionary.hi} {profile.first_name}!
-                  </span>
-
-                  <form action={logoutAction}>
-                    <Button pendingText={dictionary.logging_out}>
-                      {dictionary.logout}
-                    </Button>
-                  </form>
-                </Flex>
-              </HoverCard.Content>
-            </HoverCard.Root>
-          </Flex>
-        </Flex>
-      </header>
-    </Flex>
+                <AvatarFallback>{avatarFallback}</AvatarFallback>
+              </Avatar>
+              <span>
+                {dictionary.hi} {profile.data.first_name}!
+              </span>
+              <form action={logoutAction}>
+                <Button
+                  pendingText={dictionary.logging_out}
+                  variant={'outline'}
+                >
+                  {dictionary.logout}
+                </Button>
+              </form>
+            </div>
+          )}
+        </div>
+      </div>
+    </header>
   );
 };

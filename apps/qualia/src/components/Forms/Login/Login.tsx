@@ -1,38 +1,63 @@
+'use client';
+
+import { Input } from '@/shadcn/components/ui/input';
+import { Label } from '@/shadcn/components/ui/label';
 import dictionary from '@qualia/dictionary';
-import { Box, Text, TextField } from '@radix-ui/themes';
-import { sendMagicLink } from '../../../actions/sendMagicLink';
+import { ReactNode, useEffect } from 'react';
+import { useFormState } from 'react-dom';
+import { toast } from 'sonner';
+import { IMagicLink, sendMagicLink } from '../../../actions/sendMagicLink';
 import { Button } from '../Button/Button';
 
-const LoginForm = () => {
-  const next = '/login';
-  const source = '/login';
-  const sendMagicLinkAction = sendMagicLink.bind(null, next, source);
+const LoginForm = ({ children }: { children: ReactNode }) => {
+  const [state, formAction] = useFormState<IMagicLink>(sendMagicLink, {
+    message: undefined,
+    status: undefined,
+  });
+
+  useEffect(() => {
+    if (state.status === 'success') {
+      toast.success(state.message);
+    } else {
+      toast.error(state.message);
+    }
+
+    console.log(state);
+  }, [state]);
 
   return (
-    <div>
-      <form
-        className="flex w-full flex-1 flex-col justify-center gap-2 text-foreground"
-        action={sendMagicLinkAction}
-      >
-        <Box width={'100%'} my={'4'}>
-          <Text weight={'bold'}>{dictionary['fields_email']}</Text>
-          <TextField.Root
-            size="3"
+    <div className="relative w-full">
+      {state.status === undefined && (
+        <form
+          className={`inset absolute flex w-full flex-1 flex-col justify-center gap-2 text-foreground`}
+          action={formAction}
+        >
+          <input type="hidden" name="path" value={'/'} />
+          {children}
+          <Label htmlFor="email" className="my-2 mt-6">
+            {dictionary['fields_email']}
+          </Label>
+          <Input
+            className="w-[280px]"
             name="email"
-            mt="1"
-            placeholder={dictionary['fields_email']}
+            placeholder={dictionary['fields_email_placeholder']}
             required
           />
-        </Box>
 
-        <Button
-          type="submit"
-          size="4"
-          pendingText={dictionary['sending_magic_link']}
-        >
-          {dictionary['send_magic_link']}
-        </Button>
-      </form>
+          <Button
+            type="submit"
+            pendingText={dictionary['sending_magic_link']}
+            className="w-[280px]"
+          >
+            {dictionary['send_magic_link']}
+          </Button>
+        </form>
+      )}
+      {state.status === 'success' && (
+        <div>
+          <p className="my-2 mt-2 text-xl text-gray-400">{state.message}</p>
+        </div>
+      )}
     </div>
   );
 };

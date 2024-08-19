@@ -1,17 +1,12 @@
 'use server';
 
+import { revalidatePath } from 'next/cache';
 import { redirect } from 'next/navigation';
 import { createClient } from '../utils/clients/server';
 
-export const logout = async (
-  next: string,
-
-  formData: FormData,
-) => {
+export const logout = async () => {
   const supabase = createClient();
   const { error } = await supabase.auth.signOut();
-
-  console.log('logout', error);
-
-  return error ? redirect(`}?error=${error.message}`) : redirect(next);
+  revalidatePath('/');
+  redirect('/');
 };

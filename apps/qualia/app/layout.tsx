@@ -1,8 +1,9 @@
 import { EB_Garamond, Inter } from 'next/font/google';
 
-import { Theme } from '@radix-ui/themes';
-
-import './../src/styles/index.css';
+import { BreadCrumbs } from '@/components/BreadCrumbs/BreadCrumbs';
+import { Header } from '@/components/Header/Header';
+import { Toaster } from '@/shadcn/components/ui/sonner';
+import './../src/styles/global.css';
 
 // If loading a variable font, you don't need to specify the font weight
 const garamond = EB_Garamond({
@@ -34,9 +35,10 @@ export default function RootLayout({
   return (
     <html lang="en" className={[garamond.variable, inter.variable].join(' ')}>
       <body>
-        <Theme accentColor="teal" grayColor="slate" radius="small">
-          {children}
-        </Theme>
+        <Header />
+        <BreadCrumbs />
+        {children}
+        <Toaster expand richColors />
       </body>
     </html>
   );

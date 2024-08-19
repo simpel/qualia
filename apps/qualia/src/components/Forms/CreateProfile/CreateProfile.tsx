@@ -1,6 +1,13 @@
+'use client';
+
+import { Input } from '@/shadcn/components/ui/input';
+import { Label } from '@/shadcn/components/ui/label';
+import { IStatus } from '@/types/generic';
 import dictionary from '@qualia/dictionary';
-import { Box, Text, TextField } from '@radix-ui/themes';
 import { User } from '@supabase/supabase-js';
+import { useEffect } from 'react';
+import { useFormState } from 'react-dom';
+import { toast } from 'sonner';
 import { createProfile } from '../../../actions/createProfile';
 import { Button } from '../Button/Button';
 
@@ -9,57 +16,47 @@ export type ICreateProfile = {
 };
 
 const CreateProfileForm = ({ email }: ICreateProfile) => {
-  const next = '/you';
-  const source = '/hello';
+  const [state, formAction] = useFormState(createProfile, {} as IStatus);
 
-  const createProfileAction = createProfile.bind(null, next, source);
+  useEffect(() => {
+    console.log({ state });
+
+    if (state instanceof Error) {
+      toast.error(state.message);
+    } else {
+      toast[state.status === 'success' ? 'success' : 'error'](state.message);
+    }
+  }, [state]);
 
   return (
-    <form action={createProfileAction}>
-      <Box width={'100%'} my={'4'}>
-        <Text weight={'bold'}>Your first name</Text>
-        <TextField.Root
-          size="3"
-          name="first_name"
-          mt="1"
-          placeholder="You first name"
-          required
-        />
-      </Box>
-      <Box width={'100%'} my={'4'}>
-        <Text weight={'bold'}>Your last name</Text>
-        <TextField.Root
-          size="3"
-          mt="1"
-          name="last_name"
-          placeholder="You last name"
-          required
-        />
-      </Box>
+    <form action={formAction}>
+      <div className="flex flex-col gap-6">
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="first_name">{dictionary.fields_first_name}</Label>
+          <Input name="first_name" type="text" />
+        </div>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="last_name">{dictionary.fields_last_name}</Label>
+          <Input name="last_name" type="text" />
+        </div>
+        <div className="grid w-full max-w-sm items-center gap-1.5">
+          <Label htmlFor="email">{dictionary.fields_email}</Label>
+          <Input
+            name="email"
+            type="email"
+            defaultValue={email}
+            placeholder={dictionary.fields_email_placeholder}
+          />
+        </div>
+      </div>
 
-      <Box width={'100%'} my={'4'}>
-        <Text weight={'bold'}>Your e-mail</Text>
-        <TextField.Root
-          type="email"
-          name="email"
-          size="3"
-          mt="1"
-          defaultValue={email}
-          placeholder="You email"
-          required
-        />
-      </Box>
-
-      <Box width={'100%'} mt="6">
-        <Button
-          className="mt-4"
-          type="submit"
-          size="4"
-          pendingText={dictionary.create_profile_continuing}
-        >
-          {dictionary.create_profile_continue}
-        </Button>
-      </Box>
+      <Button
+        className="mt-4"
+        type="submit"
+        pendingText={dictionary.create_profile_continuing}
+      >
+        {dictionary.create_profile_continue}
+      </Button>
     </form>
   );
 };

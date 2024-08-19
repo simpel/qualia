@@ -8,30 +8,42 @@ import { Tables } from '../types/supabase';
 import { createClient } from '../utils/clients/server';
 import { getUser } from '../utils/server/user';
 
-export const createProfile = async (prevState: IStatus, formData: FormData) => {
+export interface IAddStudentsToClass {
+  classId: Tables<'classes'>['id'];
+  emails?: string[];
+  status?: IStatus;
+}
+
+export const addStudentsToClass = async (
+  prevState: IAddStudentsToClass,
+  formData: FormData,
+): Promise<Error | IAddStudentsToClass> => {
   const supabase = createClient();
   const user = await getUser();
 
   if (!user) return new Error('User not found');
 
   const { error } = await supabase.from('profiles').upsert({
-    user_id: user.id,
     email: formData.get('email'),
-    last_name: formData.get('last_name'),
-    first_name: formData.get('first_name'),
     gravatar: sha256(formData.get('email') as Message) as string,
   } as Tables<'profiles'>);
 
-  revalidatePath('/');
+  revalidatePath('/classes');
   if (error) {
     return {
-      message: dictionary.create_profile_error,
-      status: 'error',
+      ...prevState,
+      status: {
+        message: dictionary.class_add_students_error,
+        status: 'error',
+      },
     };
   }
 
   return {
-    message: dictionary.create_profile_success,
-    status: 'success',
+    ...prevState,
+    status: {
+      message: dictionary.class_add_students_success,
+      status: 'success',
+    },
   };
 };

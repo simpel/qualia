@@ -12,7 +12,7 @@ export default {
   singleQuote: true,
   plugins: ['prettier-plugin-tailwindcss', 'prettier-plugin-packagejson'],
   tailwindConfig: fileURLToPath(
-    new URL('./apps/qualia/tailwind.config.ts', import.meta.url),
+    new URL('./apps/qualia/tailwind.config.js', import.meta.url),
   ),
   tailwindFunctions: ['cn', 'cva'],
 };
