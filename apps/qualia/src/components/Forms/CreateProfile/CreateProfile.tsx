@@ -19,12 +19,10 @@ const CreateProfileForm = ({ email }: ICreateProfile) => {
   const [state, formAction] = useFormState(createProfile, {} as IStatus);
 
   useEffect(() => {
-    console.log({ state });
-
     if (state instanceof Error) {
       toast.error(state.message);
     } else {
-      toast[state.status === 'success' ? 'success' : 'error'](state.message);
+      toast[state.status](state.message);
     }
   }, [state]);
 

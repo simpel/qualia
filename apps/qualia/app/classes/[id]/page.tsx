@@ -1,3 +1,4 @@
+import { AddStudentsDialog } from '@/components/AddStudentsDialog/AddStudentsDialog';
 import { RemoveUserDialog } from '@/components/RemoveUserDialog/RemoveUserDialog';
 import { Button } from '@/shadcn/components/ui/button';
 import { Label } from '@/shadcn/components/ui/label';
@@ -37,7 +38,7 @@ export default async function ClassesPage({ params }: IClassesPage) {
       *,
       classes_users (
         *,
-        profiles (first_name, last_name, user_id)
+        profiles (first_name, last_name, id, email)
       )
       `,
     )
@@ -49,7 +50,8 @@ export default async function ClassesPage({ params }: IClassesPage) {
   return (
     <div className="container mx-auto">
       <main className="mt-8 flex flex-col gap-8">
-        <h2 className=" font-serif text-4xl font-thin">{currentClass.name}</h2>
+        <h2 className="font-serif text-4xl font-thin">{currentClass.name}</h2>
+
         <div className="flex gap-8 rounded-xl bg-gray-100 p-6">
           <div>
             <Label className="font-bold" htmlFor="class_size">
@@ -76,23 +78,32 @@ export default async function ClassesPage({ params }: IClassesPage) {
             </p>
           </div>
         </div>
-        <h2 className=" font-serif text-4xl font-thin">
-          {dictionary.students}
-        </h2>
+        <div className="flex items-center justify-between">
+          <h2 className=" font-serif text-4xl font-thin">
+            {dictionary.students}
+          </h2>
+          <AddStudentsDialog classId={currentClass.id}>
+            <Button>{dictionary.add_students}</Button>
+          </AddStudentsDialog>
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
               <TableHead>{dictionary.name}</TableHead>
+              <TableHead>{dictionary.email}</TableHead>
               <TableHead>{dictionary.added}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
             {currentClass.classes_users.map((student) => {
+              if (student.profiles === null) return null;
+
               return (
-                <TableRow key={student.profiles?.user_id}>
+                <TableRow key={student.profiles?.id}>
                   <TableCell>
-                    {student.profiles?.first_name} {student.profiles?.last_name}
+                    {student.profiles.first_name} {student.profiles.last_name}
                   </TableCell>
+                  <TableCell>{student.profiles.email}</TableCell>
                   <TableCell>
                     {new Date(student.created_at).toLocaleString()}
                   </TableCell>
@@ -100,15 +111,15 @@ export default async function ClassesPage({ params }: IClassesPage) {
                     <div className="flex justify-end gap-4">
                       <RemoveUserDialog
                         currentClass={currentClass}
-                        user={student.profiles}
+                        profile={student.profiles}
                       >
                         <Button variant="secondary">
                           {dictionary.remove_student}
                         </Button>
                       </RemoveUserDialog>
                       <Button asChild>
-                        <Link href={`/profiles/${student.user_id}`}>
-                          {dictionary.view_profile}
+                        <Link href={`/profiles/${student.id}`}>
+                          {dictionary.profile_view}
                           <MoveRight className="ml-2" />
                         </Link>
                       </Button>

@@ -2,10 +2,10 @@
 
 import { IStatus } from '@/types/generic';
 import { parseDictionary } from '@/utils/dictionary/dictionary';
+import { isAuthenticated } from '@/utils/isAuthenticated/isAuthenticated';
 import dictionary from '@qualia/dictionary';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '../utils/clients/server';
-import { getUser } from '../utils/server/user';
 
 export interface IRemoveStudentFromClass {
   status?: IStatus;
@@ -14,24 +14,23 @@ export interface IRemoveStudentFromClass {
 export const removeStudentFromClass = async (
   prevState: IRemoveStudentFromClass,
   formData: FormData,
-): Promise<Error | IRemoveStudentFromClass> => {
+): Promise<IRemoveStudentFromClass> => {
   const supabase = createClient();
-  const user = await getUser();
+  await isAuthenticated();
 
-  if (!user) return new Error('User not found');
-
-  const userId = formData.get('user_id') as string;
+  const profileId = formData.get('profile_id') as string;
   const classId = formData.get('class_id') as string;
   const className = formData.get('class_name') as string;
   const studentName = formData.get('student_name') as string;
 
-  console.log({ prevState });
+  console.log({ prevState, studentName, classId, profileId, className });
 
-  const { error } = await supabase
+  const { error, data } = await supabase
     .from('classes_users')
     .delete()
     .eq('class_id', classId)
-    .eq('user_id', userId);
+    .eq('profile_id', profileId)
+    .select();
 
   revalidatePath(`/classes/[id]`, 'page');
 

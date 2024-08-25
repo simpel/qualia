@@ -23,8 +23,9 @@ import { Button } from '../Forms/Button/Button';
 interface IRemoveUserAlertDialog {
   children: ReactNode;
   currentClass: Tables<'classes'>;
-  user: {
-    user_id: Tables<'profiles'>['user_id'];
+  profile: {
+    id: Tables<'profiles'>['id'];
+    email: Tables<'profiles'>['email'];
     first_name: Tables<'profiles'>['first_name'];
     last_name: Tables<'profiles'>['last_name'];
   };
@@ -33,7 +34,7 @@ interface IRemoveUserAlertDialog {
 export const RemoveUserDialog = ({
   children,
   currentClass,
-  user,
+  profile,
 }: IRemoveUserAlertDialog) => {
   const [state, formAction] = useFormState(removeStudentFromClass, {
     status: undefined,
@@ -41,14 +42,17 @@ export const RemoveUserDialog = ({
 
   const [open, setOpen] = useState(false);
 
+  const name =
+    profile.first_name === null && profile.last_name === null
+      ? profile.email
+      : `${profile.first_name} ${profile.last_name}`;
+
   useEffect(() => {
     if (state instanceof Error) {
       toast.error(state.message);
     } else {
       if (state.status !== undefined) {
-        toast[state.status.status === 'success' ? 'success' : 'error'](
-          state.status.message,
-        );
+        toast[state.status.status](state.status.message);
         setOpen(false);
       }
     }
@@ -61,7 +65,7 @@ export const RemoveUserDialog = ({
           <AlertDialogTitle>{dictionary.remove_student}</AlertDialogTitle>
           <AlertDialogDescription>
             {parseDictionary(dictionary.class_remove_student_description, {
-              name: `${user.first_name} ${user.last_name}`,
+              name: name,
               class: currentClass.name,
             })}
           </AlertDialogDescription>
@@ -71,14 +75,10 @@ export const RemoveUserDialog = ({
           <AlertDialogCancel>Cancel</AlertDialogCancel>
 
           <form action={formAction}>
-            <input type="hidden" name="user_id" value={user.user_id} />
+            <input type="hidden" name="profile_id" value={profile.id} />
             <input type="hidden" name="class_id" value={currentClass.id} />
             <input type="hidden" name="class_name" value={currentClass.name} />
-            <input
-              type="hidden"
-              name="student_name"
-              value={`${user.first_name} ${user.last_name}`}
-            />
+            <input type="hidden" name="student_name" value={name} />
 
             <Button
               type="submit"

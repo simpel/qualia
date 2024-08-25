@@ -21,8 +21,6 @@ const LoginForm = ({ children }: { children: ReactNode }) => {
     } else {
       toast.error(state.message);
     }
-
-    console.log(state);
   }, [state]);
 
   return (

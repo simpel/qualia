@@ -1,4 +1,14 @@
+type TStatusTypes =
+  | 'normal'
+  | 'action'
+  | 'success'
+  | 'info'
+  | 'warning'
+  | 'error'
+  | 'loading'
+  | 'default';
+
 export interface IStatus {
-  status?: 'error' | 'success';
-  message?: string;
+  status: TStatusTypes;
+  message: string;
 }

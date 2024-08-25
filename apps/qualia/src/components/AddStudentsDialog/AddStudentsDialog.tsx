@@ -11,7 +11,7 @@ import {
 } from '@/shadcn/components/ui/dialog';
 import { ReactMultiEmail } from 'react-multi-email';
 
-import { addStudentsToClass } from '@/actions/addStudentsToClass';
+import { addProfilesToClass } from '@/actions/addStudentsToClass';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { Tables } from '@/types/supabase';
 import dictionary from '@qualia/dictionary';
@@ -27,30 +27,30 @@ interface IAddUserDialog {
   classId: Tables<'classes'>['id'];
 }
 
-export const AddUsersDialog = ({ children, classId }: IAddUserDialog) => {
+export const AddStudentsDialog = ({ children, classId }: IAddUserDialog) => {
   const [emails, setEmails] = useState<string[]>([]);
+  const [open, setOpen] = useState(false);
 
   const [state, formAction] = useFormState(
-    addStudentsToClass.bind(null, emails),
-    {
-      classId,
-      status: undefined,
-    },
+    addProfilesToClass.bind(null, emails, classId),
+    [],
   );
 
   useEffect(() => {
+    console.log(state);
+
     if (state instanceof Error) {
       toast.error(state.message);
+      setOpen(false);
     } else {
-      if (state.status !== undefined) {
-        toast[state.status.status === 'success' ? 'success' : 'error'](
-          state.status.message,
-        );
-      }
+      state.forEach((state) => {
+        toast[state.status](state.message);
+      });
+      setOpen(false);
     }
   }, [state]);
   return (
-    <Dialog>
+    <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
@@ -85,6 +85,7 @@ export const AddUsersDialog = ({ children, classId }: IAddUserDialog) => {
 
         <DialogFooter>
           <form action={formAction}>
+            <input type="hidden" name="classId" value={classId} />
             <Button
               type="submit"
               disabled={emails.length === 0}

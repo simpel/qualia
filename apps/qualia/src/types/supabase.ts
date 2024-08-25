@@ -102,22 +102,22 @@ export type Database = {
       }
       classes_users: {
         Row: {
-          class_id: number | null
+          class_id: number
           created_at: string
           id: number
-          user_id: string | null
+          profile_id: string
         }
         Insert: {
-          class_id?: number | null
+          class_id: number
           created_at?: string
           id?: number
-          user_id?: string | null
+          profile_id: string
         }
         Update: {
-          class_id?: number | null
+          class_id?: number
           created_at?: string
           id?: number
-          user_id?: string | null
+          profile_id?: string
         }
         Relationships: [
           {
@@ -128,17 +128,10 @@ export type Database = {
             referencedColumns: ["id"]
           },
           {
-            foreignKeyName: "classes_users_user_id_fkey"
-            columns: ["user_id"]
+            foreignKeyName: "classes_users_profile_id_fkey"
+            columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"
-            referencedColumns: ["user_id"]
-          },
-          {
-            foreignKeyName: "user_classes_user_id_fkey"
-            columns: ["user_id"]
-            isOneToOne: false
-            referencedRelation: "users"
             referencedColumns: ["id"]
           },
         ]
@@ -147,26 +140,32 @@ export type Database = {
         Row: {
           created_at: string
           email: string
-          first_name: string
-          gravatar: string | null
-          last_name: string
-          user_id: string
+          first_name: string | null
+          gravatar: string
+          id: string
+          last_name: string | null
+          updated_at: string
+          user_id: string | null
         }
         Insert: {
           created_at?: string
           email: string
-          first_name: string
-          gravatar?: string | null
-          last_name: string
-          user_id: string
+          first_name?: string | null
+          gravatar: string
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+          user_id?: string | null
         }
         Update: {
           created_at?: string
           email?: string
-          first_name?: string
-          gravatar?: string | null
-          last_name?: string
-          user_id?: string
+          first_name?: string | null
+          gravatar?: string
+          id?: string
+          last_name?: string | null
+          updated_at?: string
+          user_id?: string | null
         }
         Relationships: [
           {

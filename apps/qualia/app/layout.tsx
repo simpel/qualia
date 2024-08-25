@@ -38,7 +38,13 @@ export default function RootLayout({
         <Header />
         <BreadCrumbs />
         {children}
-        <Toaster expand richColors />
+        <Toaster
+          richColors
+          closeButton
+          theme="system"
+          gap={20}
+          visibleToasts={5}
+        />
       </body>
     </html>
   );
