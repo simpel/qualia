@@ -22,7 +22,7 @@ const CreateProfileForm = ({ email }: ICreateProfile) => {
     if (state instanceof Error) {
       toast.error(state.message);
     } else {
-      toast[state.status](state.message);
+      toast[state.status](dictionary[state.message]);
     }
   }, [state]);
 

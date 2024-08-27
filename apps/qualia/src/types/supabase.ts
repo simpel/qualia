@@ -143,6 +143,7 @@ export type Database = {
           first_name: string | null
           gravatar: string
           id: string
+          last_loggedin_at: string | null
           last_name: string | null
           updated_at: string
           user_id: string | null
@@ -153,6 +154,7 @@ export type Database = {
           first_name?: string | null
           gravatar: string
           id?: string
+          last_loggedin_at?: string | null
           last_name?: string | null
           updated_at?: string
           user_id?: string | null
@@ -163,6 +165,7 @@ export type Database = {
           first_name?: string | null
           gravatar?: string
           id?: string
+          last_loggedin_at?: string | null
           last_name?: string | null
           updated_at?: string
           user_id?: string | null
@@ -173,6 +176,42 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: true
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles_roles: {
+        Row: {
+          created_at: string
+          id: number
+          profile_id: string | null
+          role_id: number | null
+        }
+        Insert: {
+          created_at?: string
+          id?: number
+          profile_id?: string | null
+          role_id?: number | null
+        }
+        Update: {
+          created_at?: string
+          id?: number
+          profile_id?: string | null
+          role_id?: number | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_roles_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_roles_role_id_fkey"
+            columns: ["role_id"]
+            isOneToOne: false
+            referencedRelation: "roles"
             referencedColumns: ["id"]
           },
         ]
@@ -266,42 +305,6 @@ export type Database = {
           {
             foreignKeyName: "submissions_student_id_fkey"
             columns: ["student_id"]
-            isOneToOne: false
-            referencedRelation: "users"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
-      user_roles: {
-        Row: {
-          created_at: string
-          id: number
-          role_id: number | null
-          user_id: string | null
-        }
-        Insert: {
-          created_at?: string
-          id?: number
-          role_id?: number | null
-          user_id?: string | null
-        }
-        Update: {
-          created_at?: string
-          id?: number
-          role_id?: number | null
-          user_id?: string | null
-        }
-        Relationships: [
-          {
-            foreignKeyName: "user_roles_role_id_fkey"
-            columns: ["role_id"]
-            isOneToOne: false
-            referencedRelation: "roles"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "user_roles_user_id_fkey"
-            columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "users"
             referencedColumns: ["id"]

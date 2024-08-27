@@ -23,6 +23,18 @@ export async function GET(request: NextRequest) {
 
       const profile = await getProfile();
 
+      //add latest login time
+
+      console.log('on confirm', profile);
+      if (profile.profile?.data?.id !== undefined) {
+        await supabase
+          .from('profiles')
+          .update({
+            last_loggedin_at: new Date().toISOString(),
+          })
+          .eq('id', profile.profile.data.id);
+      }
+
       if (profile) {
         redirect(next);
       } else {

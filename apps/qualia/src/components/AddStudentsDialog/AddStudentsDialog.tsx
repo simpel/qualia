@@ -11,23 +11,22 @@ import {
 } from '@/shadcn/components/ui/dialog';
 import { ReactMultiEmail } from 'react-multi-email';
 
-import { addProfilesToClass } from '@/actions/addStudentsToClass';
+import { addProfilesToClass } from '@/actions/addProfilesToClass';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { Tables } from '@/types/supabase';
 import dictionary from '@qualia/dictionary';
 import { X } from 'lucide-react';
-import { ReactNode, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
 import 'react-multi-email/dist/style.css';
 import { toast } from 'sonner';
 import { Button } from '../Forms/Button/Button';
 
 interface IAddUserDialog {
-  children: ReactNode;
   classId: Tables<'classes'>['id'];
 }
 
-export const AddStudentsDialog = ({ children, classId }: IAddUserDialog) => {
+export const AddStudentsDialog = ({ classId }: IAddUserDialog) => {
   const [emails, setEmails] = useState<string[]>([]);
   const [open, setOpen] = useState(false);
 
@@ -51,7 +50,11 @@ export const AddStudentsDialog = ({ children, classId }: IAddUserDialog) => {
   }, [state]);
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>{children}</DialogTrigger>
+      <DialogTrigger asChild>
+        <Button className="bg-green-600 hover:bg-green-700">
+          {dictionary.add_students}
+        </Button>
+      </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{dictionary.add_students}</DialogTitle>

@@ -6,10 +6,17 @@ interface IError {
   message: string;
   status: 'no_profile' | 'no_user';
 }
+type TRoles = {
+  role: {
+    id: number;
+    name: string;
+  } | null;
+}[];
 
 export interface IGetProfile {
   user: UserResponse;
   profile: PostgrestSingleResponse<Tables<'profiles'>> | null;
+  roles?: TRoles | null;
 }
 
 export const getProfile = async (): Promise<IGetProfile> => {
@@ -20,18 +27,29 @@ export const getProfile = async (): Promise<IGetProfile> => {
   if (user.data.user?.id) {
     const profile = await supabase
       .from('profiles')
-      .select()
+      .select(
+        `*, 
+        roles:profiles_roles (
+          role:roles (
+            id,
+            name
+          )
+        )
+        `,
+      )
       .eq('user_id', user.data.user.id)
       .single();
 
     return {
       user: user,
       profile: profile,
+      roles: profile.data?.roles,
     };
   }
 
   return {
     user,
     profile: null,
+    roles: null,
   };
 };
