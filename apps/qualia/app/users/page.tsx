@@ -1,3 +1,4 @@
+import { AddProfilesDialog } from '@/components/AddProfilesDialog/AddProfilesDialog';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { Button } from '@/shadcn/components/ui/button';
 import {
@@ -12,6 +13,8 @@ import { createClient } from '@/utils/clients/server';
 
 import { getProfile } from '@/utils/server/profile';
 import dictionary from '@qualia/dictionary';
+import { formatDistanceToNow } from 'date-fns';
+import { enGB } from 'date-fns/locale';
 import { MoveRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -30,12 +33,22 @@ export default async function ClassesPage() {
         `,
   );
 
+  const { data: classes } = await supabase.from('classes').select('*');
+  const { data: roles } = await supabase.from('roles').select('*');
+
   return (
     <div className="container mx-auto">
       <main className="mt-8 flex flex-col gap-8">
-        <h2 className=" font-serif text-4xl font-thin">
-          {dictionary.users_title}
-        </h2>
+        <div className="flex items-center justify-between">
+          <h1 className="font-serif text-4xl font-thin">{dictionary.users}</h1>
+          <AddProfilesDialog
+            classes={classes}
+            roles={roles}
+            revalidatePath="/users"
+          >
+            {dictionary.add_user}
+          </AddProfilesDialog>
+        </div>
         <Table>
           <TableHeader>
             <TableRow>
@@ -61,17 +74,28 @@ export default async function ClassesPage() {
                   {profile.email}
                 </TableCell>
                 <TableCell className="align-center">
-                  {new Date(profile.created_at).toLocaleString()}
+                  {profile.updated_at
+                    ? formatDistanceToNow(new Date(profile.created_at), {
+                        addSuffix: true,
+                        locale: enGB,
+                      })
+                    : null}
                 </TableCell>
                 <TableCell className="align-center">
                   {profile.updated_at
-                    ? new Date(profile.updated_at).toLocaleString()
-                    : '-'}
+                    ? formatDistanceToNow(new Date(profile.updated_at), {
+                        addSuffix: true,
+                        locale: enGB,
+                      })
+                    : null}
                 </TableCell>
                 <TableCell className="align-center">
                   {profile.last_loggedin_at
-                    ? new Date(profile.last_loggedin_at).toLocaleString()
-                    : '-'}
+                    ? formatDistanceToNow(new Date(profile.last_loggedin_at), {
+                        addSuffix: true,
+                        locale: enGB,
+                      })
+                    : null}
                 </TableCell>
                 <TableCell className="align-center ">
                   <div className="flex gap-4">

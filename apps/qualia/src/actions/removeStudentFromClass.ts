@@ -11,7 +11,7 @@ export interface IRemoveStudentFromClass {
   status?: IStatus;
 }
 
-export const removeStudentFromClass = async (
+export const removeProfileFromClass = async (
   prevState: IRemoveStudentFromClass,
   formData: FormData,
 ): Promise<IRemoveStudentFromClass> => {

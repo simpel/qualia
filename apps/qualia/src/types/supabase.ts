@@ -100,42 +100,6 @@ export type Database = {
           },
         ]
       }
-      classes_users: {
-        Row: {
-          class_id: number
-          created_at: string
-          id: number
-          profile_id: string
-        }
-        Insert: {
-          class_id: number
-          created_at?: string
-          id?: number
-          profile_id: string
-        }
-        Update: {
-          class_id?: number
-          created_at?: string
-          id?: number
-          profile_id?: string
-        }
-        Relationships: [
-          {
-            foreignKeyName: "classes_users_class_id_fkey"
-            columns: ["class_id"]
-            isOneToOne: false
-            referencedRelation: "classes"
-            referencedColumns: ["id"]
-          },
-          {
-            foreignKeyName: "classes_users_profile_id_fkey"
-            columns: ["profile_id"]
-            isOneToOne: false
-            referencedRelation: "profiles"
-            referencedColumns: ["id"]
-          },
-        ]
-      }
       profiles: {
         Row: {
           created_at: string
@@ -176,6 +140,42 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: true
             referencedRelation: "users"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles_classes: {
+        Row: {
+          class_id: number
+          created_at: string
+          id: number
+          profile_id: string
+        }
+        Insert: {
+          class_id: number
+          created_at?: string
+          id?: number
+          profile_id: string
+        }
+        Update: {
+          class_id?: number
+          created_at?: string
+          id?: number
+          profile_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "classes_users_class_id_fkey"
+            columns: ["class_id"]
+            isOneToOne: false
+            referencedRelation: "classes"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "classes_users_profile_id_fkey"
+            columns: ["profile_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

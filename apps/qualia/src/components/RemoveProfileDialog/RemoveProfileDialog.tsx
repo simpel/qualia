@@ -1,6 +1,6 @@
 'use client';
 
-import { removeStudentFromClass } from '@/actions/removeStudentFromClass';
+import { removeProfileFromClass } from '@/actions/removeStudentFromClass';
 import {
   AlertDialog,
   AlertDialogCancel,
@@ -31,12 +31,12 @@ interface IRemoveUserAlertDialog {
   };
 }
 
-export const RemoveUserDialog = ({
+export const RemoveProfileDialog = ({
   children,
   currentClass,
   profile,
 }: IRemoveUserAlertDialog) => {
-  const [state, formAction] = useFormState(removeStudentFromClass, {
+  const [state, formAction] = useFormState(removeProfileFromClass, {
     status: undefined,
   });
 

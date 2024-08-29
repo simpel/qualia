@@ -1,5 +1,3 @@
-import { AddStudentsDialog } from '@/components/AddStudentsDialog/AddStudentsDialog';
-import { RemoveUserDialog } from '@/components/RemoveUserDialog/RemoveUserDialog';
 import {
   Avatar,
   AvatarFallback,
@@ -21,6 +19,7 @@ import { createName } from '@/utils/profle/createName/createName';
 import { formatDistanceToNow } from 'date-fns';
 import { enGB } from 'date-fns/locale';
 
+import { AddProfilesDialog } from '@/components/AddProfilesDialog/AddProfilesDialog';
 import { getProfile } from '@/utils/server/profile';
 import dictionary from '@qualia/dictionary';
 import { MoveRight } from 'lucide-react';
@@ -61,7 +60,7 @@ export default async function ClassesPage({ params }: IClassesPage) {
     <div className="container mx-auto">
       <main className="mt-8 flex flex-col gap-8">
         <div className="flex items-center justify-between">
-          <h2 className="font-serif text-4xl font-thin">{currentClass.name}</h2>
+          <h1 className="font-serif text-4xl font-thin">{currentClass.name}</h1>
           <Button variant={'destructive'}>{dictionary.remove_class}</Button>
         </div>
 
@@ -77,7 +76,10 @@ export default async function ClassesPage({ params }: IClassesPage) {
               {dictionary.created_at}
             </Label>
             <p id="created_at">
-              {new Date(currentClass.created_at).toLocaleString()}
+              {formatDistanceToNow(new Date(currentClass.created_at), {
+                addSuffix: true,
+                locale: enGB,
+              })}
             </p>
           </div>
           <div>
@@ -86,8 +88,11 @@ export default async function ClassesPage({ params }: IClassesPage) {
             </Label>
             <p id="updated_at">
               {currentClass.updated_at
-                ? new Date(currentClass.updated_at).toLocaleString()
-                : '-'}
+                ? formatDistanceToNow(new Date(currentClass.updated_at), {
+                    addSuffix: true,
+                    locale: enGB,
+                  })
+                : null}
             </p>
           </div>
         </div>
@@ -95,7 +100,7 @@ export default async function ClassesPage({ params }: IClassesPage) {
           <h2 className=" font-serif text-4xl font-thin">
             {dictionary.students}
           </h2>
-          <AddStudentsDialog classId={currentClass.id}></AddStudentsDialog>
+          <AddProfilesDialog classId={currentClass.id}></AddProfilesDialog>
         </div>
         <Table>
           <TableHeader>
@@ -112,21 +117,28 @@ export default async function ClassesPage({ params }: IClassesPage) {
               return (
                 <TableRow key={student.profiles?.id}>
                   <TableCell>
-                    <Avatar className="h-8 w-8">
-                      <AvatarImage
-                        src={
-                          student.profiles.gravatar
-                            ? `https://www.gravatar.com/avatar/${student.profiles.gravatar}?s=40&d=404
+                    <div className="flex items-center gap-2">
+                      <Avatar className="h-8 w-8">
+                        <AvatarImage
+                          src={
+                            student.profiles.gravatar
+                              ? `https://www.gravatar.com/avatar/${student.profiles.gravatar}?s=40&d=404
 `
-                            : undefined
-                        }
-                      />
-                      <AvatarFallback>
-                        {createName(student.profiles, true)}
-                      </AvatarFallback>
-                    </Avatar>
+                              : undefined
+                          }
+                        />
+                        <AvatarFallback>
+                          {createName(student.profiles, true)}
+                        </AvatarFallback>
+                      </Avatar>
+                      <Link
+                        href={`/users/${student.id}`}
+                        className="hover:underline"
+                      >
+                        {createName(student.profiles) || '-'}
+                      </Link>
+                    </div>
                   </TableCell>
-                  <TableCell>{createName(student.profiles) || '-'}</TableCell>
                   <TableCell>{student.profiles.email}</TableCell>
                   <TableCell>
                     {student.profiles.last_loggedin_at ? (
@@ -155,7 +167,7 @@ export default async function ClassesPage({ params }: IClassesPage) {
                         </Button>
                       </RemoveUserDialog>
                       <Button asChild>
-                        <Link href={`/profiles/${student.id}`}>
+                        <Link href={`/users/${student.id}`}>
                           {dictionary.profile_view}
                           <MoveRight className="ml-2" />
                         </Link>

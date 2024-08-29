@@ -6,15 +6,26 @@ import { useFormStatus } from 'react-dom';
 
 export interface IButton extends ButtonProps {
   pendingText?: string;
+  pending?: boolean;
 }
 
-export const Button = ({ children, pendingText, type, ...props }: IButton) => {
-  const { pending } = useFormStatus();
+export const Button = ({
+  children,
+  pendingText,
+  pending,
+  type,
+  ...props
+}: IButton) => {
+  const formStatus = useFormStatus();
+
+  const isPending = pending || formStatus.pending;
+
+  console.log({ pending });
 
   return (
-    <UIButton type={type} disabled={pending} {...props}>
-      {pending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-      {pending ? pendingText : children}
+    <UIButton type={type} disabled={isPending} {...props}>
+      {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+      {isPending ? pendingText : children}
     </UIButton>
   );
 };

@@ -1,4 +1,4 @@
-import { AddStudentsDialog } from '@/components/AddStudentsDialog/AddStudentsDialog';
+import { AddProfilesDialog } from '@/components/AddProfilesDialog/AddProfilesDialog';
 import { Button } from '@/shadcn/components/ui/button';
 import {
   Table,
@@ -64,9 +64,9 @@ export default async function ClassesPage() {
                 </TableCell>
                 <TableCell className="align-center">
                   <div className="flex justify-end gap-4">
-                    <AddStudentsDialog
+                    <AddProfilesDialog
                       classId={currentClass.id}
-                    ></AddStudentsDialog>
+                    ></AddProfilesDialog>
                     <Button asChild>
                       <Link href={`/classes/${currentClass.id}`}>
                         {dictionary.classes_class_details}
