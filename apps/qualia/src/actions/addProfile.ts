@@ -2,17 +2,28 @@
 
 import { IStatus } from '@/types/generic';
 import { createClient } from '@/utils/clients/server';
+import { parseDictionary } from '@/utils/dictionary/dictionary';
 import { isAuthenticated } from '@/utils/isAuthenticated/isAuthenticated';
 import { createName } from '@/utils/profle/createName/createName';
+import dictionary from '@qualia/dictionary';
 import { Message, sha256 } from 'js-sha256';
 import { revalidatePath } from 'next/cache';
 
-export async function addProfile(
-  emails: string[],
-  roleId?: number,
-  classId?: number,
-  path?: string,
-): Promise<IStatus[]> {
+export interface IAddProfile {
+  emails: string[];
+  roleId: number;
+  classId?: number;
+  className?: string;
+  path?: string;
+}
+
+export async function addProfile({
+  emails,
+  roleId,
+  classId,
+  className,
+  path,
+}: IAddProfile): Promise<IStatus[]> {
   const supabase = createClient();
   await isAuthenticated();
 
@@ -35,25 +46,27 @@ export async function addProfile(
         if (newProfileError) {
           statusMessages.push({
             status: 'error',
-            message: `Failed to create profile for ${email}`,
+            message: parseDictionary(dictionary.create_profile_error, {
+              name: email,
+            }),
           });
           return null;
         }
 
-        console.log(newProfileData);
-
         statusMessages.push({
           status: 'success',
-          message: `Profile created successfully for ${createName(newProfileData[0]) || email}`,
+          message: parseDictionary(dictionary.profile_created_for, {
+            name: createName(newProfileData[0]) || email,
+          }),
         });
 
         return newProfileData[0];
       } else {
-        console.log({ profileData });
-
         statusMessages.push({
           status: 'info',
-          message: `Profile exists for ${createName(profileData) || profileData.email}`,
+          message: parseDictionary(dictionary.profile_already_exists_for, {
+            name: createName(profileData) || profileData.email,
+          }),
         });
         return profileData;
       }
@@ -81,12 +94,17 @@ export async function addProfile(
         if (existingRoleData && existingRoleData.length > 0) {
           statusMessages.push({
             status: 'info',
-            message: `${createName(profile) || profile.email} already have the "${currentRole !== null ? currentRole.name : ''}" role.`,
+            message: parseDictionary(dictionary.role_already_added, {
+              name: createName(profile) || profile.email,
+              role: currentRole !== null ? currentRole.name : '',
+            }),
           });
         } else if (existingRoleError) {
           statusMessages.push({
             status: 'error',
-            message: `Error checking existing roles for ${createName(profile) || profile.email}`,
+            message: parseDictionary(dictionary.checking_existing_roles_error, {
+              name: createName(profile) || profile.email,
+            }),
           });
           continue;
         } else {
@@ -94,71 +112,88 @@ export async function addProfile(
             .from('profiles_roles')
             .upsert({ profile_id: profile.id, role_id: roleId });
 
-          console.log({ roleError });
-
           if (roleError) {
             statusMessages.push({
               status: 'error',
-              message: `Failed to update roles for profile ${createName(profile) || profile.email}`,
+              message: parseDictionary(dictionary.updating_roles_error, {
+                name: createName(profile) || profile.email,
+              }),
             });
             continue;
           }
 
-          if (currentRole !== null) {
-            statusMessages.push({
-              status: 'success',
-              message: `${createName(profile) || profile.email} was given the  ${currentRole !== null ? currentRole.name : ''} role.`,
-            });
-          } else {
-            statusMessages.push({
-              status: 'success',
-              message: `Role updated for ${createName(profile) || profile.email}`,
-            });
-          }
+          statusMessages.push({
+            status: 'success',
+            message: parseDictionary(dictionary.updated_profile_role, {
+              name: createName(profile) || profile.email,
+              role: currentRole !== null ? currentRole.name : '',
+            }),
+          });
         }
       }
 
+      // Step 3: Update the profiles_classes table if classId is provided
       // Step 3: Update the profiles_classes table if classId is provided
       if (roleId === 3) {
         if (!classId) {
           statusMessages.push({
             status: 'error',
-            message: `A class ID is required for the ${currentRole !== null ? currentRole.name : ''} role`,
+            message: dictionary.generic_error,
           });
           continue;
         }
 
-        const { error: classError } = await supabase
-          .from('profiles_classes')
-          .upsert({ profile_id: profile.id, class_id: classId });
+        // Check if the profile is already in the class
+        const { data: existingClassData, error: existingClassError } =
+          await supabase
+            .from('profiles_classes')
+            .select('id')
+            .eq('profile_id', profile.id)
+            .eq('class_id', classId)
+            .single();
 
-        console.log({ classError });
-
-        if (classError) {
+        if (existingClassData) {
           statusMessages.push({
-            status: 'error',
-            message: `Failed to update class for profile ${createName(profile) || profile.email}`,
+            status: 'info',
+            message: parseDictionary(dictionary.profile_already_in_class, {
+              name: createName(profile) || profile.email,
+              class: className || '',
+            }),
           });
-          continue;
-        }
+        } else {
+          const { error: classError } = await supabase
+            .from('profiles_classes')
+            .upsert({ profile_id: profile.id, class_id: classId });
 
-        statusMessages.push({
-          status: 'success',
-          message: `Class updated successfully for profile ${createName(profile) || profile.email}`,
-        });
-      } else if (classId) {
-        statusMessages.push({
-          status: 'error',
-          message: 'Class ID should not be provided for roles other than 3',
-        });
-        continue;
+          if (classError) {
+            statusMessages.push({
+              status: 'error',
+              message: parseDictionary(
+                dictionary.profile_could_not_be_added_to_class,
+                {
+                  name: createName(profile) || profile.email,
+                  class: className || '',
+                },
+              ),
+            });
+            continue;
+          }
+
+          statusMessages.push({
+            status: 'success',
+            message: parseDictionary(dictionary.profile_added_to_class, {
+              name: createName(profile) || profile.email,
+              class: className || '',
+            }),
+          });
+        }
       }
     }
   } catch (error) {
     if (error instanceof Error) {
       statusMessages.push({
         status: 'error',
-        message: `Unexpected error: ${error.message}`,
+        message: dictionary.generic_error,
       });
     }
   }

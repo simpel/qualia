@@ -92,12 +92,17 @@ export const AddProfilesDialog = ({
 
   const onSubmit = async (data: z.infer<typeof AddProfilesSchema>) => {
     try {
-      const response = await addProfile(
-        [data.email],
-        Number(data.roleId),
-        Number(data.classId),
-        revalidatePath,
+      const currentClass = classes?.find(
+        (currentClass) => currentClass.id === Number(data.classId),
       );
+
+      const response = await addProfile({
+        emails: [data.email],
+        roleId: Number(data.roleId),
+        classId: Number(data.classId),
+        className: currentClass?.name,
+        path: revalidatePath,
+      });
 
       response.forEach((status) => {
         toast[status.status](status.message);
@@ -158,8 +163,8 @@ export const AddProfilesDialog = ({
                   <FormItem>
                     <FormLabel>
                       {roles.length === 1
-                        ? dictionary.users_prepicked_role
-                        : dictionary.users_pick_role}
+                        ? dictionary.selected_role
+                        : dictionary.select_a_role}
                     </FormLabel>
 
                     <FormControl>
@@ -183,7 +188,7 @@ export const AddProfilesDialog = ({
                         >
                           <SelectTrigger>
                             <SelectValue
-                              placeholder={dictionary.users_pick_role}
+                              placeholder={dictionary.select_a_role}
                             />
                           </SelectTrigger>
                           <SelectContent>
@@ -213,8 +218,8 @@ export const AddProfilesDialog = ({
                   <FormItem>
                     <FormLabel>
                       {classes.length === 1
-                        ? dictionary.users_prepicked_class
-                        : dictionary.users_pick_class}
+                        ? dictionary.selected_class
+                        : dictionary.select_a_class}
                     </FormLabel>
 
                     <FormControl>
@@ -232,7 +237,7 @@ export const AddProfilesDialog = ({
                         >
                           <SelectTrigger>
                             <SelectValue
-                              placeholder={dictionary.users_pick_class}
+                              placeholder={dictionary.select_a_class}
                             />
                           </SelectTrigger>
                           <SelectContent>
@@ -256,10 +261,10 @@ export const AddProfilesDialog = ({
             <Button
               type="submit"
               pending={form.formState.isSubmitting}
-              pendingText={dictionary.class_add_students_saving_changes}
+              pendingText={dictionary.adding_students}
               disabled={!form.formState.isValid}
             >
-              {dictionary.class_add_students_save_changes}
+              {dictionary.add_students}
             </Button>
           </form>
         </Form>

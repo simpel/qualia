@@ -13,6 +13,7 @@ import {
 } from '@/shadcn/components/ui/alert-dialog';
 import { Tables } from '@/types/supabase';
 import { parseDictionary } from '@/utils/dictionary/dictionary';
+import { createName } from '@/utils/profle/createName/createName';
 import dictionary from '@qualia/dictionary';
 import { ReactNode, useEffect, useState } from 'react';
 import { useFormState } from 'react-dom';
@@ -20,7 +21,7 @@ import 'react-multi-email/dist/style.css';
 import { toast } from 'sonner';
 import { Button } from '../Forms/Button/Button';
 
-interface IRemoveUserAlertDialog {
+interface IRemoveProfileAlertDialog {
   children: ReactNode;
   currentClass: Tables<'classes'>;
   profile: {
@@ -31,11 +32,11 @@ interface IRemoveUserAlertDialog {
   };
 }
 
-export const RemoveProfileDialog = ({
+export const RemoveProfileFromClassDialog = ({
   children,
   currentClass,
   profile,
-}: IRemoveUserAlertDialog) => {
+}: IRemoveProfileAlertDialog) => {
   const [state, formAction] = useFormState(removeProfileFromClass, {
     status: undefined,
   });
@@ -64,8 +65,8 @@ export const RemoveProfileDialog = ({
         <AlertDialogHeader>
           <AlertDialogTitle>{dictionary.remove_student}</AlertDialogTitle>
           <AlertDialogDescription>
-            {parseDictionary(dictionary.class_remove_student_description, {
-              name: name,
+            {parseDictionary(dictionary.this_will_remove_student_from_class, {
+              name: createName(profile) || profile.email,
               class: currentClass.name,
             })}
           </AlertDialogDescription>

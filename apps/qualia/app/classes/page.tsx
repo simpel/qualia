@@ -9,42 +9,48 @@ import {
   TableRow,
 } from '@/shadcn/components/ui/table';
 import { createClient } from '@/utils/clients/server';
-
+import hasRole from '@/utils/hasRole/hasRole';
+import { isAuthenticated } from '@/utils/isAuthenticated/isAuthenticated';
 import { getProfile } from '@/utils/server/profile';
+
 import dictionary from '@qualia/dictionary';
 import { MoveRight } from 'lucide-react';
 import Link from 'next/link';
 
 export default async function ClassesPage() {
-  const { profile, user } = await getProfile();
   const supabase = createClient();
+  await isAuthenticated();
+  const { roles } = await getProfile();
 
-  const { data: classes } = await supabase.from('classes').select(`
-		*,
-    classes_users (
-      id
-    )
-		`);
+  const isTeacher = hasRole(roles, 'teacher');
+
+  const classes = await supabase.from('classes').select(`
+    *,
+    profiles_classes (*)
+    `);
+
+  const { data: studentRoles } = await supabase
+    .from('roles')
+    .select('*')
+    .eq('name', 'student');
 
   return (
     <div className="container mx-auto">
       <main className="mt-8 flex flex-col gap-8">
         <h2 className=" font-serif text-4xl font-thin">
-          {dictionary.classes_title}
+          {dictionary.your_classes}
         </h2>
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="max-w-64">
-                {dictionary.classes_class_name}
-              </TableHead>
-              <TableHead>{dictionary.classes_class_member_count}</TableHead>
+              <TableHead className="max-w-64">{dictionary.name}</TableHead>
+              <TableHead>{dictionary.number_of_students}</TableHead>
               <TableHead>{dictionary.created_at}</TableHead>
               <TableHead>{dictionary.updated_at}</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
-            {classes?.map((currentClass) => (
+            {classes.data?.map((currentClass) => (
               <TableRow key={currentClass.id}>
                 <TableCell className="align-center font-medium">
                   <Link href={`/classes/${currentClass.id}`}>
@@ -52,7 +58,7 @@ export default async function ClassesPage() {
                   </Link>
                 </TableCell>
                 <TableCell className="align-center max-w-64 hyphens-auto">
-                  {currentClass.classes_users.length}
+                  {currentClass.profiles_classes.length}
                 </TableCell>
                 <TableCell className="align-center">
                   {new Date(currentClass.created_at).toLocaleString()}
@@ -64,12 +70,18 @@ export default async function ClassesPage() {
                 </TableCell>
                 <TableCell className="align-center">
                   <div className="flex justify-end gap-4">
-                    <AddProfilesDialog
-                      classId={currentClass.id}
-                    ></AddProfilesDialog>
+                    {isTeacher && (
+                      <AddProfilesDialog
+                        classes={[currentClass]}
+                        roles={studentRoles}
+                        revalidatePath="/classes"
+                      >
+                        {dictionary.add_student}
+                      </AddProfilesDialog>
+                    )}
                     <Button asChild>
                       <Link href={`/classes/${currentClass.id}`}>
-                        {dictionary.classes_class_details}
+                        {dictionary.see_class_details}
                         <MoveRight className="ml-2" />
                       </Link>
                     </Button>

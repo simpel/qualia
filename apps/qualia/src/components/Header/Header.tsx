@@ -18,17 +18,17 @@ export const Header = async () => {
 
   const isAdmin = hasRole(roles, 'admin');
 
-  console.log({ isAdmin });
-
   const logoutAction = logout.bind(null, '/');
 
   return (
     <header className="sticky left-0 right-0 top-0 bg-white/10 backdrop-blur-xl">
       <div className="container mx-auto">
         <div className="flex items-center justify-between">
-          <h1 className="my-4 font-serif text-4xl font-thin">
-            {dictionary.site_name}
-          </h1>
+          <Link href="/">
+            <h1 className="my-4 font-serif text-4xl font-thin">
+              {dictionary.site_name}
+            </h1>
+          </Link>
           {isAdmin && (
             <nav className="flex gap-4">
               <Link

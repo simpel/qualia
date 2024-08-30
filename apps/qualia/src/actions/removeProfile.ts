@@ -11,7 +11,7 @@ export interface IRemoveStudentFromClass {
   status?: IStatus;
 }
 
-export const removeProfileFromClass = async (
+export const removeProfile = async (
   prevState: IRemoveStudentFromClass,
   formData: FormData,
 ): Promise<IRemoveStudentFromClass> => {
@@ -19,30 +19,28 @@ export const removeProfileFromClass = async (
   await isAuthenticated();
 
   const profileId = formData.get('profile_id') as string;
-  const classId = formData.get('class_id') as string;
-  const className = formData.get('class_name') as string;
-  const studentName = formData.get('student_name') as string;
+  const path = formData.get('path') as string;
+  const name = formData.get('name') as string;
+
+  console.log({ profileId, path, name });
 
   const { error, data } = await supabase
-    .from('profiles_classes')
+    .from('profiles')
     .delete()
-    .eq('class_id', classId)
-    .eq('profile_id', profileId)
+    .eq('id', profileId)
     .select();
 
-  revalidatePath(`/classes/[id]`, 'page');
+  console.log({ error, data });
+
+  revalidatePath(path);
 
   if (error) {
     return {
       ...prevState,
       status: {
-        message: parseDictionary(
-          dictionary.student_was_removed_from_class_error,
-          {
-            class: className,
-            name: studentName,
-          },
-        ),
+        message: parseDictionary(dictionary.remove_profile_error, {
+          name: name,
+        }),
         status: 'error',
       },
     };
@@ -51,9 +49,8 @@ export const removeProfileFromClass = async (
   return {
     ...prevState,
     status: {
-      message: parseDictionary(dictionary.student_was_removed_from_class, {
-        class: className,
-        name: studentName,
+      message: parseDictionary(dictionary.remove_profile_success, {
+        name: name,
       }),
       status: 'success',
     },

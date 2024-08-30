@@ -92,10 +92,10 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "classes_created_by_fkey"
+            foreignKeyName: "classes_created_by_fkey1"
             columns: ["created_by"]
             isOneToOne: false
-            referencedRelation: "users"
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]
@@ -201,7 +201,7 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "user_roles_profile_id_fkey"
+            foreignKeyName: "profiles_roles_profile_id_fkey"
             columns: ["profile_id"]
             isOneToOne: false
             referencedRelation: "profiles"

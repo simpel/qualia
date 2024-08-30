@@ -17,21 +17,17 @@ export default async function ClassesPage({ params }: IClassesPage) {
 
   const supabase = createClient();
 
-  const { data: currentClass } = await supabase
-    .from('classes')
+  const { data: currentProfile } = await supabase
+    .from('profiles')
     .select(
       `
-      *,
-      classes_users (
-        *,
-        profiles (first_name, last_name, id, email, user_id, gravatar, last_loggedin_at)
-      )
+      *
       `,
     )
     .eq('id', params.id)
     .single();
 
-  if (currentClass === null) redirect('/classes');
+  if (currentProfile === null) redirect('/users');
 
-  return <div className="container mx-auto">sd</div>;
+  return <div className="container mx-auto">{currentProfile.first_name}</div>;
 }

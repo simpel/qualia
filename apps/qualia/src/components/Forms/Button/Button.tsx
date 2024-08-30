@@ -20,8 +20,6 @@ export const Button = ({
 
   const isPending = pending || formStatus.pending;
 
-  console.log({ pending });
-
   return (
     <UIButton type={type} disabled={isPending} {...props}>
       {isPending && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}

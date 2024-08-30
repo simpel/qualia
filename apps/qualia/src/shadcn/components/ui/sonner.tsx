@@ -13,9 +13,6 @@ const Toaster = ({ ...props }: ToasterProps) => {
   const status = queryParams.get('status');
   const message = queryParams.get('message');
 
-  console.log('status', status);
-  console.log('message', message);
-
   if (status && message) {
     toast[status](dictionary[message]);
   }

@@ -1,4 +1,5 @@
 import { AddProfilesDialog } from '@/components/AddProfilesDialog/AddProfilesDialog';
+import { RemoveProfile } from '@/components/RemoveProfile/RemoveProfile';
 import { Badge } from '@/shadcn/components/ui/badge';
 import { Button } from '@/shadcn/components/ui/button';
 import {
@@ -13,8 +14,6 @@ import { createClient } from '@/utils/clients/server';
 
 import { getProfile } from '@/utils/server/profile';
 import dictionary from '@qualia/dictionary';
-import { formatDistanceToNow } from 'date-fns';
-import { enGB } from 'date-fns/locale';
 import { MoveRight } from 'lucide-react';
 import Link from 'next/link';
 
@@ -52,13 +51,7 @@ export default async function ClassesPage() {
         <Table>
           <TableHeader>
             <TableRow>
-              <TableHead className="max-w-64">
-                {dictionary.classes_class_name}
-              </TableHead>
-              <TableHead>{dictionary.classes_class_member_count}</TableHead>
-              <TableHead>{dictionary.created_at}</TableHead>
-              <TableHead>{dictionary.updated_at}</TableHead>
-              <TableHead>{dictionary.profile_last_login}</TableHead>
+              <TableHead className="max-w-64">{dictionary.name}</TableHead>
               <TableHead>{dictionary.roles}</TableHead>
             </TableRow>
           </TableHeader>
@@ -73,30 +66,7 @@ export default async function ClassesPage() {
                 <TableCell className="align-center max-w-64 hyphens-auto">
                   {profile.email}
                 </TableCell>
-                <TableCell className="align-center">
-                  {profile.updated_at
-                    ? formatDistanceToNow(new Date(profile.created_at), {
-                        addSuffix: true,
-                        locale: enGB,
-                      })
-                    : null}
-                </TableCell>
-                <TableCell className="align-center">
-                  {profile.updated_at
-                    ? formatDistanceToNow(new Date(profile.updated_at), {
-                        addSuffix: true,
-                        locale: enGB,
-                      })
-                    : null}
-                </TableCell>
-                <TableCell className="align-center">
-                  {profile.last_loggedin_at
-                    ? formatDistanceToNow(new Date(profile.last_loggedin_at), {
-                        addSuffix: true,
-                        locale: enGB,
-                      })
-                    : null}
-                </TableCell>
+
                 <TableCell className="align-center ">
                   <div className="flex gap-4">
                     {profile.roles.map((role) => (
@@ -106,9 +76,14 @@ export default async function ClassesPage() {
                 </TableCell>
                 <TableCell className="align-center">
                   <div className="flex justify-end gap-4">
+                    <RemoveProfile profile={profile} path="/users">
+                      <Button variant="secondary">
+                        {dictionary.remove_profile}
+                      </Button>
+                    </RemoveProfile>
                     <Button asChild>
                       <Link href={`/users/${profile.id}`}>
-                        {dictionary.users_user_details}
+                        {dictionary.view_profile}
                         <MoveRight className="ml-2" />
                       </Link>
                     </Button>

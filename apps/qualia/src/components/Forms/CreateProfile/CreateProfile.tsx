@@ -30,11 +30,11 @@ const CreateProfileForm = ({ email }: ICreateProfile) => {
     <form action={formAction}>
       <div className="flex flex-col gap-6">
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="first_name">{dictionary.fields_first_name}</Label>
+          <Label htmlFor="first_name">{dictionary.your_first_name}</Label>
           <Input name="first_name" type="text" />
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
-          <Label htmlFor="last_name">{dictionary.fields_last_name}</Label>
+          <Label htmlFor="last_name">{dictionary.your_last_name}</Label>
           <Input name="last_name" type="text" />
         </div>
         <div className="grid w-full max-w-sm items-center gap-1.5">
@@ -51,9 +51,9 @@ const CreateProfileForm = ({ email }: ICreateProfile) => {
       <Button
         className="mt-4"
         type="submit"
-        pendingText={dictionary.create_profile_continuing}
+        pendingText={dictionary.creating_profile}
       >
-        {dictionary.create_profile_continue}
+        {dictionary.create_profile}
       </Button>
     </form>
   );

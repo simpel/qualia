@@ -31,7 +31,7 @@ export const createProfile = async (prevState: IStatus, formData: FormData) => {
   }
 
   return {
-    message: dictionary.create_profile_success,
+    message: dictionary.profile_created,
     status: 'success',
   };
 };

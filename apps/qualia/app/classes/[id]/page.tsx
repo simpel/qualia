@@ -20,7 +20,8 @@ import { formatDistanceToNow } from 'date-fns';
 import { enGB } from 'date-fns/locale';
 
 import { AddProfilesDialog } from '@/components/AddProfilesDialog/AddProfilesDialog';
-import { getProfile } from '@/utils/server/profile';
+import { RemoveProfileFromClassDialog } from '@/components/RemoveProfileFromClassDialog/RemoveProfileFromClassDialog';
+import { isAuthenticated } from '@/utils/isAuthenticated/isAuthenticated';
 import dictionary from '@qualia/dictionary';
 import { MoveRight } from 'lucide-react';
 import Link from 'next/link';
@@ -35,17 +36,16 @@ interface IClassesPage {
 
 export default async function ClassesPage({ params }: IClassesPage) {
   if (params.id === null) redirect('/classes');
-
-  const { profile, user, roles } = await getProfile();
-
   const supabase = createClient();
+
+  await isAuthenticated();
 
   const { data: currentClass } = await supabase
     .from('classes')
     .select(
       `
       *,
-      classes_users (
+      profiles_classes (
         *,
         profiles (first_name, last_name, id, email, user_id, gravatar, last_loggedin_at)
       )
@@ -53,6 +53,17 @@ export default async function ClassesPage({ params }: IClassesPage) {
     )
     .eq('id', params.id)
     .single();
+
+  const { data: availableRoles } = await supabase
+    .from('roles')
+    .select(
+      `
+      *
+      `,
+    )
+    .eq('id', '3');
+
+  console.log({ availableRoles });
 
   if (currentClass === null) redirect('/classes');
 
@@ -67,9 +78,9 @@ export default async function ClassesPage({ params }: IClassesPage) {
         <div className="flex gap-8 rounded-xl bg-gray-100 p-6">
           <div>
             <Label className="font-bold" htmlFor="class_size">
-              {dictionary['classes_class_member_count']}
+              {dictionary['number_of_students']}
             </Label>
-            <p id="class_size">{currentClass?.classes_users.length}</p>
+            <p id="class_size">{currentClass?.profiles_classes.length}</p>
           </div>
           <div>
             <Label className="font-bold" htmlFor="created_at">
@@ -100,7 +111,13 @@ export default async function ClassesPage({ params }: IClassesPage) {
           <h2 className=" font-serif text-4xl font-thin">
             {dictionary.students}
           </h2>
-          <AddProfilesDialog classId={currentClass.id}></AddProfilesDialog>
+          <AddProfilesDialog
+            classes={[currentClass]}
+            roles={availableRoles}
+            revalidatePath={`/classes/${currentClass.id}`}
+          >
+            {dictionary.add_student}
+          </AddProfilesDialog>
         </div>
         <Table>
           <TableHeader>
@@ -111,7 +128,7 @@ export default async function ClassesPage({ params }: IClassesPage) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {currentClass.classes_users.map((student) => {
+            {currentClass.profiles_classes.map((student) => {
               if (student.profiles === null) return null;
 
               return (
@@ -158,17 +175,17 @@ export default async function ClassesPage({ params }: IClassesPage) {
 
                   <TableCell className="align-center">
                     <div className="flex justify-end gap-4">
-                      <RemoveUserDialog
+                      <RemoveProfileFromClassDialog
                         currentClass={currentClass}
                         profile={student.profiles}
                       >
                         <Button variant="secondary">
                           {dictionary.remove_student}
                         </Button>
-                      </RemoveUserDialog>
+                      </RemoveProfileFromClassDialog>
                       <Button asChild>
-                        <Link href={`/users/${student.id}`}>
-                          {dictionary.profile_view}
+                        <Link href={`/users/${student.profiles.id}`}>
+                          {dictionary.view_profile}
                           <MoveRight className="ml-2" />
                         </Link>
                       </Button>

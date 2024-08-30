@@ -25,7 +25,6 @@ export async function GET(request: NextRequest) {
 
       //add latest login time
 
-      console.log('on confirm', profile);
       if (profile.profile?.data?.id !== undefined) {
         await supabase
           .from('profiles')
