@@ -16,7 +16,7 @@ type TRoles = {
 export interface IGetProfile {
   user: UserResponse;
   profile: PostgrestSingleResponse<Tables<'profiles'>> | null;
-  roles?: TRoles | null;
+  roles?: Tables<'roles'>[];
 }
 
 export const getProfile = async (): Promise<IGetProfile> => {
@@ -31,8 +31,7 @@ export const getProfile = async (): Promise<IGetProfile> => {
         `*, 
         roles:profiles_roles (
           role:roles (
-            id,
-            name
+            *
           )
         )
         `,
@@ -43,7 +42,7 @@ export const getProfile = async (): Promise<IGetProfile> => {
     return {
       user: user,
       profile: profile,
-      roles: profile.data?.roles,
+      roles: profile.data?.roles.map((role) => role.role) as Tables<'roles'>[],
     };
   }
 

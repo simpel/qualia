@@ -118,11 +118,7 @@ export const AddProfilesDialog = ({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger asChild>
-        <Button className="bg-green-600 hover:bg-green-700">
-          {children ?? dictionary.add_students}
-        </Button>
-      </DialogTrigger>
+      <DialogTrigger asChild>{children}</DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
         <DialogHeader>
           <DialogTitle>{dictionary.add_students}</DialogTitle>

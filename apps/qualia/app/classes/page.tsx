@@ -76,7 +76,9 @@ export default async function ClassesPage() {
                         roles={studentRoles}
                         revalidatePath="/classes"
                       >
-                        {dictionary.add_student}
+                        <Button className="bg-green-600 hover:bg-green-700">
+                          {dictionary.add_student}
+                        </Button>
                       </AddProfilesDialog>
                     )}
                     <Button asChild>

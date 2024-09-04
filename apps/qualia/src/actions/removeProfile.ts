@@ -22,8 +22,6 @@ export const removeProfile = async (
   const path = formData.get('path') as string;
   const name = formData.get('name') as string;
 
-  console.log({ profileId, path, name });
-
   const { error, data } = await supabase
     .from('profiles')
     .delete()

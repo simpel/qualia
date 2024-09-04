@@ -48,6 +48,7 @@ export const RemoveProfile = ({
       }
     }
   }, [state]);
+
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>{children}</AlertDialogTrigger>

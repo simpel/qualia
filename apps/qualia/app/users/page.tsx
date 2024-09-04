@@ -45,7 +45,9 @@ export default async function ClassesPage() {
             roles={roles}
             revalidatePath="/users"
           >
-            {dictionary.add_user}
+            <Button className="bg-green-600 hover:bg-green-700">
+              {dictionary.add_user}
+            </Button>
           </AddProfilesDialog>
         </div>
         <Table>

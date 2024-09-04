@@ -23,7 +23,7 @@ import { AddProfilesDialog } from '@/components/AddProfilesDialog/AddProfilesDia
 import { RemoveProfileFromClassDialog } from '@/components/RemoveProfileFromClassDialog/RemoveProfileFromClassDialog';
 import { isAuthenticated } from '@/utils/isAuthenticated/isAuthenticated';
 import dictionary from '@qualia/dictionary';
-import { MoveRight } from 'lucide-react';
+import { MoveRight, Trash2 } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 
@@ -72,7 +72,10 @@ export default async function ClassesPage({ params }: IClassesPage) {
       <main className="mt-8 flex flex-col gap-8">
         <div className="flex items-center justify-between">
           <h1 className="font-serif text-4xl font-thin">{currentClass.name}</h1>
-          <Button variant={'destructive'}>{dictionary.remove_class}</Button>
+          <Button variant={'destructive'}>
+            <Trash2 className="mr-2 h-4 w-4" />
+            {dictionary.remove_class}
+          </Button>
         </div>
 
         <div className="flex gap-8 rounded-xl bg-gray-100 p-6">
@@ -116,7 +119,9 @@ export default async function ClassesPage({ params }: IClassesPage) {
             roles={availableRoles}
             revalidatePath={`/classes/${currentClass.id}`}
           >
-            {dictionary.add_student}
+            <Button className="bg-green-600 hover:bg-green-700">
+              {dictionary.add_student}
+            </Button>
           </AddProfilesDialog>
         </div>
         <Table>
