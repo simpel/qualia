@@ -79,7 +79,7 @@ export const HandleRolesDialog = ({
 
   const onSubmit = async (data: z.infer<typeof HandleRolesSchema>) => {
     try {
-      const response = await handleRoles({
+      await handleRoles({
         path,
         profileId: profile.id,
         roles: roles.map((item) => ({

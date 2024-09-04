@@ -11,6 +11,7 @@ import {
 } from '@/shadcn/components/ui/table';
 import { Tables } from '@/types/supabase';
 import { parseDictionary } from '@/utils/dictionary/dictionary';
+import { createName } from '@/utils/profle/createName/createName';
 import dictionary from '@qualia/dictionary';
 import { User } from '@supabase/supabase-js';
 import { MoveRight } from 'lucide-react';
@@ -88,7 +89,7 @@ export const AuthorizedStartPage = ({ profile }: IAuthorizedPage) => {
       <main className="flex flex-col gap-16">
         <h1 className=" font-serif text-5xl font-thin">
           {parseDictionary(dictionary.dashboard_segments_title, {
-            name: profile.first_name,
+            name: createName(profile) || profile.email,
           })}
         </h1>
         <div className="flex flex-col gap-12">

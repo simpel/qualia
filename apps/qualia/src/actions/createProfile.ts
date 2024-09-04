@@ -8,11 +8,18 @@ import { Tables } from '../types/supabase';
 import { createClient } from '../utils/clients/server';
 import { getUser } from '../utils/server/user';
 
-export const createProfile = async (prevState: IStatus, formData: FormData) => {
+export const createProfile = async (
+  prevState: IStatus,
+  formData: FormData,
+): Promise<IStatus> => {
   const supabase = createClient();
   const user = await getUser();
 
-  if (!user) return new Error('User not found');
+  if (!user)
+    return {
+      message: dictionary.user_not_found,
+      status: 'error',
+    };
 
   const { error } = await supabase.from('profiles').upsert({
     user_id: user.id,

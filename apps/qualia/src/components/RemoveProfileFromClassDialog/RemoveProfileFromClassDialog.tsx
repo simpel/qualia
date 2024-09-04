@@ -53,6 +53,7 @@ export const RemoveProfileFromClassDialog = ({
       toast.error(state.message);
     } else {
       if (state.status !== undefined) {
+        // @ts-ignore
         toast[state.status.status](state.status.message);
         setOpen(false);
       }

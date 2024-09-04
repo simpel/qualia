@@ -49,6 +49,6 @@ export const getProfile = async (): Promise<IGetProfile> => {
   return {
     user,
     profile: null,
-    roles: null,
+    roles: undefined,
   };
 };

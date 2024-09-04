@@ -14,6 +14,7 @@ const Toaster = ({ ...props }: ToasterProps) => {
   const message = queryParams.get('message');
 
   if (status && message) {
+    // @ts-ignore
     toast[status](dictionary[message]);
   }
 

@@ -72,7 +72,7 @@ export default async function ClassesPage() {
                 <TableCell className="align-center ">
                   <div className="flex gap-4">
                     {profile.roles.map((role) => (
-                      <Badge key={role.id}>{role.role?.name}</Badge>
+                      <Badge key={role.role?.id}>{role.role?.name}</Badge>
                     ))}
                   </div>
                 </TableCell>

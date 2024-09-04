@@ -6,11 +6,12 @@ import dictionary from '@qualia/dictionary';
 import { ReactNode, useEffect } from 'react';
 import { useFormState } from 'react-dom';
 import { toast } from 'sonner';
-import { IMagicLink, sendMagicLink } from '../../../actions/sendMagicLink';
+import { sendMagicLink } from '../../../actions/sendMagicLink';
 import { Button } from '../Button/Button';
 
 const LoginForm = ({ children }: { children: ReactNode }) => {
-  const [state, formAction] = useFormState<IMagicLink>(sendMagicLink, {
+  // @ts-ignore
+  const [state, formAction] = useFormState(sendMagicLink, {
     message: undefined,
     status: undefined,
   });

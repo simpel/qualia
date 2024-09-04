@@ -22,6 +22,7 @@ const CreateProfileForm = ({ email }: ICreateProfile) => {
     if (state instanceof Error) {
       toast.error(state.message);
     } else {
+      // @ts-ignore
       toast[state.status](dictionary[state.message]);
     }
   }, [state]);

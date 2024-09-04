@@ -28,8 +28,6 @@ export const removeProfile = async (
     .eq('id', profileId)
     .select();
 
-  console.log({ error, data });
-
   revalidatePath(path);
 
   if (error) {

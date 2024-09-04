@@ -105,12 +105,14 @@ export const AddProfilesDialog = ({
       });
 
       response.forEach((status) => {
+        //@ts-ignore
         toast[status.status](status.message);
       });
 
       setOpen(false);
     } catch (error) {
-      toast.error(`An error occurred: ${error.message}`);
+      if (error instanceof Error)
+        toast.error(`An error occurred: ${error.message}`);
     }
   };
 

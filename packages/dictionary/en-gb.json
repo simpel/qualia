@@ -1,6 +1,7 @@
 {
   "locale": "en-gb",
   "users": "Users",
+  "user_not_found": "User not found",
   "breadcrumb_home": "Home",
   "add_user": "Add user",
   "never_logged_in": "Never logged in",

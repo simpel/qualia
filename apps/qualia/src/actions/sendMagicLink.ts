@@ -1,36 +1,33 @@
 'use server';
 
+import { IStatus } from '@/types/generic';
 import dictionary from '@qualia/dictionary';
 import { revalidatePath } from 'next/cache';
 import { createClient } from '../utils/clients/server';
 
-export interface IMagicLink {
-  message?: string;
-  status?: 'error' | 'success';
-}
-
 export const sendMagicLink = async (
-  prevState: IMagicLink,
+  prevState: IStatus,
   formData: FormData,
-) => {
+): Promise<IStatus> => {
   const email = formData.get('email') as string;
   const path = formData.get('path') as string;
   const supabase = createClient();
 
   try {
-    const { data, error } = await supabase.auth.signInWithOtp({
+    await supabase.auth.signInWithOtp({
       email,
     });
     revalidatePath(path);
     return {
+      ...prevState,
       status: 'success',
       message: dictionary.sent_magic_link,
-      buttonStatus: 'successed',
     };
   } catch (error) {
+    revalidatePath(path);
     return {
+      ...prevState,
       status: 'error',
-      buttonStatus: 'ready',
       message: dictionary.sent_magic_link_failed,
     };
   }
